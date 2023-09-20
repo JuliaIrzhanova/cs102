@@ -1,4 +1,3 @@
-"""Hello"""
 import math
 import typing as tp
 
