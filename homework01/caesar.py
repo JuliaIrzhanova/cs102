@@ -20,7 +20,13 @@ def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
             ciphertext += finalLetter
         else:
             ciphertext+=ch
+
+
     return ciphertext
+
+
+for i in 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz':
+    print(i, ord(i))
 
 
 def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
@@ -45,4 +51,6 @@ def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
             plaintext += finalLetter
         else:
             plaintext+=ch
+
     return plaintext
+
