@@ -54,8 +54,8 @@ def multiplicative_inverse(e: int, phi: int) -> int:
         e, phi = phi, e % phi
         a, b = b, a - b * q
         c, d = c, c - d * q
-    k = a % n
-    return k
+    d = a % n
+    return d
 
 
 
