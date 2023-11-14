@@ -12,17 +12,17 @@ def is_prime(n: int) -> bool:
     >>> is_prime(8)
     False
     """
-    k=0
-    for i in range (2,int(n**0.5)+1):
-        if n%i==0:
-            k+=1
-    if k==0:
+    k = 0
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            k += 1
+    if k == 0:
         return True
     else:
         return False
 
 
-def gcd(a: int, b: int) -> int:
+# def gcd(a: int, b: int) -> int:
     """
     Euclid's algorithm for determining the greatest common divisor.
     >>> gcd(12, 15)
@@ -36,8 +36,6 @@ def gcd(a: int, b: int) -> int:
         else:
             b = b % a
     return a + b
-
-    
 
 
 def multiplicative_inverse(e: int, phi: int) -> int:
@@ -56,7 +54,6 @@ def multiplicative_inverse(e: int, phi: int) -> int:
         c, d = c, c - d * q
     d = a % n
     return d
-
 
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
