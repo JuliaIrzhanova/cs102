@@ -2,7 +2,7 @@ import random
 import typing as tp
 
 
-def is_prime(n: int) -> bool:
+def is_prime(num: int) -> bool:
     """
     Tests to see if a number is prime.
     >>> is_prime(2)
@@ -12,14 +12,14 @@ def is_prime(n: int) -> bool:
     >>> is_prime(8)
     False
     """
-    k = 0
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
-            k += 1
-    if k == 0:
-        return True
-    else:
+    if num <= 1:
         return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+
+    return True
+
 
 
 def gcd(a: int, b: int) -> int:
