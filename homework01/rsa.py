@@ -22,7 +22,7 @@ def is_prime(n: int) -> bool:
         return False
 
 
-# def gcd(a: int, b: int) -> int:
+def gcd(a: int, b: int) -> int:
     """
     Euclid's algorithm for determining the greatest common divisor.
     >>> gcd(12, 15)
@@ -38,7 +38,7 @@ def is_prime(n: int) -> bool:
     return a + b
 
 
-def multiplicative_inverse(e: int, phi: int) -> int:
+# def multiplicative_inverse(e: int, phi: int) -> int:
     """
     Euclid's extended algorithm for finding the multiplicative
     inverse of two numbers.
