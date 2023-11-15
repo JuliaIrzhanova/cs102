@@ -9,16 +9,10 @@ def encrypt_vigenere(plaintext: str, keyword: str) -> str:
     'LXFOPVEFRNHR'
     """
     ciphertext = ""
-    a = 0
-    while len(keyword) < len(plaintext):
-        keyword += keyword[a]
-        a += 1
-    for i in range(len(keyword)):
-        if keyword[i].isupper():
-            key = ord(keyword[i]) - 65
-        elif keyword[i].islower():
-            key = ord(keyword[i]) - 97
+    keyword = keyword.lower()
+    for i in range(len(plaintext)):
         if plaintext[i].isalpha():
+            key = ord(keyword[i % len(keyword)]) - 97
             c = ord(plaintext[i])
             if plaintext[i].isupper() and c >= 91 - key:
                 ciphertext += chr(c - 26 + key)
@@ -43,16 +37,10 @@ def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
     'ATTACKATDAWN'
     """
     plaintext = ""
-    a = 0
-    while len(keyword) < len(ciphertext):
-        keyword += keyword[a]
-        a += 1
-    for i in range(len(keyword)):
-        if keyword[i].isupper():
-            key = ord(keyword[i]) - 65
-        elif keyword[i].islower():
-            key = ord(keyword[i]) - 97
+    keyword = keyword.lower()
+    for i in range(len(ciphertext)):
         if ciphertext[i].isalpha():
+            key = ord(keyword[i % len(keyword)]) - 97
             c = ord(ciphertext[i])
             if ciphertext[i].isupper() and c <= 64 + key:
                 plaintext += chr(c + 26 - key)
