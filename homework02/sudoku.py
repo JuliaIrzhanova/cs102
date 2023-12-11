@@ -1,5 +1,7 @@
+import math
 import pathlib
 import typing as tp
+
 
 T = tp.TypeVar("T")
 
@@ -79,7 +81,10 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     >>> get_block(grid, (8, 8))
     ['2', '8', '.', '.', '.', '5', '.', '7', '9']
     """
-    pass
+    n = int(math.sqrt(len(grid)))
+    start_row, start_col = pos[0] - pos[0] % n, pos[1] - pos[1] % n
+    block_values = [grid[i][j] for i in range(start_row, start_row + n) for j in range(start_col, start_col + n)]
+    return block_values
 
 
 def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[int, int]]:
