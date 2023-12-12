@@ -68,8 +68,9 @@ def get_exits(grid: List[List[Union[str, int]]]) -> List[Tuple[int, int]]:
     :param grid:
     :return:
     """
+    
 
-    pass
+
 
 
 def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str, int]]]:
@@ -80,7 +81,30 @@ def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str,
     :return:
     """
 
-    pass
+    cells = []
+    for i in range(0, len(grid)):
+        for j in range(0, len(grid)):
+            if grid[i][j] == k:
+                cells.append([i, j])
+    for q in range(len(cells)):
+        x, y = cells[q][0], cells[q][1]
+        if y != 0 and grid[x][y - 1] == " ":
+            grid[x][y - 1] = k + 1
+        elif y != 0 and grid[x][y - 1] == 0:
+            grid[x][y - 1] = k + 1
+        if x != 0 and grid[x - 1][y] == " ":
+            grid[x - 1][y] = k + 1
+        elif x != 0 and grid[x - 1][y] == 0:
+            grid[x - 1][y] = k + 1
+        if y != len(grid) - 1 and grid[x][y + 1] == " ":
+            grid[x][y + 1] = k + 1
+        elif y != len(grid) - 1 and grid[x][y + 1] == 0:
+            grid[x][y + 1] = k + 1
+        if x != len(grid) - 1 and grid[x + 1][y] == " ":
+            grid[x + 1][y] = k + 1
+        elif x != len(grid) - 1 and grid[x + 1][y] == 0:
+            grid[x + 1][y] = k + 1
+    return grid
 
 
 def shortest_path(
@@ -92,7 +116,38 @@ def shortest_path(
     :param exit_coord:
     :return:
     """
-    pass
+    a, b = exit_coord[0], exit_coord[1]
+    theexit = grid[exit_coord[0]][exit_coord[1]]
+    k = int(grid[a][b]) - 1
+    path = []
+    current = a, b
+    path.append(current)
+    while k != 0:
+        if a + 1 < len(grid):
+            if grid[a + 1][b] == k:
+                current = a + 1, b
+                a += 1
+        if a - 1 >= 0:
+            if grid[a - 1][b] == k:
+                current = a - 1, b
+                a -= 1
+        if b + 1 < len(grid):
+            if grid[a][b + 1] == k:
+                current = a, b + 1
+                b += 1
+        if b - 1 >= 0:
+            if grid[a][b - 1] == k:
+                current = a, b - 1
+                b -= 1
+        path.append(current)
+        k -= 1
+    if len(path) != theexit:
+        x = path[-1][0]
+        y = path[-1][1]
+        grid[x][y] = " "
+        p, q = path[-2][0], path[-2][1]
+        shortest_path(grid, (p, q))
+    return path
 
 
 def encircled_exit(grid: List[List[Union[str, int]]], coord: Tuple[int, int]) -> bool:
