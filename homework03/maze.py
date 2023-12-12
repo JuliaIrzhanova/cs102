@@ -1,7 +1,7 @@
 from copy import deepcopy
 from random import choice, randint
 from typing import List, Optional, Tuple, Union
-
+import random
 import pandas as pd
 
 
@@ -19,7 +19,20 @@ def remove_wall(
     :return:
     """
 
-    pass
+    choice = ["up", "right"]
+    i, j = coord[0], coord[1]
+    route = random.choice(choice)
+    if route == "up":
+        if i != 1:
+            grid[i - 1][j] = " "
+        elif j + 2 != len(grid[0]):
+            grid[i][j + 1] = " "
+    else:
+        if j + 2 != len(grid[0]):
+            grid[i][j + 1] = " "
+        elif i != 1:
+            grid[i - 1][j] = " "
+    return grid
 
 
 def bin_tree_maze(
@@ -37,7 +50,7 @@ def bin_tree_maze(
     empty_cells = []
     for x, row in enumerate(grid):
         for y, _ in enumerate(row):
-            if x % 2 == 1 and y % 2 == 1:
+            if x % 2 != 0 and y % 2 != 0:
                 grid[x][y] = " "
                 empty_cells.append((x, y))
 
@@ -47,6 +60,9 @@ def bin_tree_maze(
     # выбрать второе возможное направление
     # 3. перейти в следующую клетку, сносим между клетками стену
     # 4. повторять 2-3 до тех пор, пока не будут пройдены все клетки
+
+    for i in empty_cells:
+        grid = remove_wall(grid, i)
 
     # генерация входа и выхода
     if random_exit:
@@ -68,7 +84,14 @@ def get_exits(grid: List[List[Union[str, int]]]) -> List[Tuple[int, int]]:
     :param grid:
     :return:
     """
-    
+
+    list1 = []
+    for x, row in enumerate(grid):
+        if "X" in row:
+            for y, _ in enumerate(row):
+                if grid[x][y] == "X":
+                    list1.append((x, y))
+    return list1
 
 
 
@@ -158,7 +181,23 @@ def encircled_exit(grid: List[List[Union[str, int]]], coord: Tuple[int, int]) ->
     :return:
     """
 
-    pass
+    x, y = coord[0], coord[1]
+    if (
+        (x == 0 and y == 0)
+        or (x == 0 and y == len(grid) - 1)
+        or (x == len(grid) - 1 and y == 0)
+        or (x == len(grid) - 1 and y == len(grid))
+    ):
+        return True
+    if y == 0 and grid[x][y + 1] == "■":
+        return True
+    if y == len(grid) - 1 and grid[x][y - 1] == "■":
+        return True
+    if x == 0 and grid[x + 1][y] == "■":
+        return True
+    if x == len(grid) - 1 and grid[x - 1][y] == "■":
+        return True
+    return False
 
 
 def solve_maze(
@@ -170,7 +209,29 @@ def solve_maze(
     :return:
     """
 
-    pass
+    lnx = len(grid)
+    lny = len(grid[0])
+    coordinate = get_exits(grid)
+    if len(coordinate) == 1:
+        return grid, coordinate[0]
+    if not encircled_exit(grid, coordinate[0]) and not encircled_exit(grid, coordinate[1]):
+        for x in range(lnx):
+            for y in range(lny):
+                if grid[x][y] == " ":
+                    grid[x][y] = 0
+        grid[coordinate[0][0]][coordinate[0][1]] = 1
+        grid[coordinate[1][0]][coordinate[1][1]] = 0
+        k = 1
+        while grid[coordinate[1][0]][coordinate[1][1]] == 0:
+            grid = make_step(grid, k)
+            k += 1
+        route = shortest_path(grid, coordinate[1])
+        for x in range(lnx):
+            for y in range(lny):
+                if grid[x][y] != " " and grid[x][y] != "■":
+                    grid[x][y] = " "
+        return grid, route
+    return grid, None
 
 
 def add_path_to_grid(
@@ -188,7 +249,10 @@ def add_path_to_grid(
             for j, _ in enumerate(row):
                 if (i, j) in path:
                     grid[i][j] = "X"
+                if str(grid[i][j]).isdigit():
+                    grid[i][j] = " "
     return grid
+
 
 
 if __name__ == "__main__":
