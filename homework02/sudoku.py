@@ -1,3 +1,4 @@
+import random
 import math
 import pathlib
 import typing as tp
@@ -150,9 +151,28 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
     return None
 
 def check_solution(solution: tp.List[tp.List[str]]) -> bool:
-    """ Если решение solution верно, то вернуть True, в противном случае False """
-    # TODO: Add doctests with bad puzzles
-    pass
+    """Если решение solution верно, то вернуть True, в противном случае False"""
+
+    for i in range(len(solution)):
+        row_values = set(get_row(solution, (i, 0)))
+        col_values = set(get_col(solution, (0, i)))
+        if len(row_values) != len(solution) or len(col_values) != len(solution) or row_values != col_values:
+            return False
+
+    for i in range(0, len(solution), len(solution)):
+        for j in range(0, len(solution), len(solution)):
+            block_values = set(get_block(solution, (i, j)))
+            if len(block_values) != len(solution):
+                return False
+
+    for i in range(len(solution)):
+        for j in range(len(solution[i])):
+            try:
+                int(solution[i][j])
+            except ValueError:
+                return False
+
+    return True
 
 
 def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
@@ -176,7 +196,17 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     >>> check_solution(solution)
     True
     """
-    pass
+    grid = [["."] * 9 for _ in range(9)]
+    solve(grid)
+    dots = 81 - N
+    while dots > 0:
+        i, j = [random.randint(0, 8) for _ in range(2)]
+        if grid[i][j] != ".":
+            grid[i][j] = "."
+            dots -= 1
+    return grid
+
+
 
 
 if __name__ == "__main__":
