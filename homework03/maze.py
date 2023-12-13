@@ -107,14 +107,10 @@ def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str,
     for i in range(len(cells)):
         x, y = cells[i][0], cells[i][1]
         if y != 0:
-            if grid[x][y - 1] == " ":
-                grid[x][y - 1] = k + 1
-            elif grid[x][y - 1] == 0:
+            if grid[x][y - 1] in (" ", 0):
                 grid[x][y - 1] = k + 1
         if x != 0:
-            if grid[x - 1][y] == " ":
-                grid[x - 1][y] = k + 1
-            elif grid[x - 1][y] == 0:
+            if grid[x - 1][y] in (" ", 0):
                 grid[x - 1][y] = k + 1
         if y != len(grid) - 1:
             if grid[x][y + 1] in (" ", 0):
