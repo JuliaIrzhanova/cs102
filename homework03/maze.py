@@ -1,7 +1,8 @@
+import random
 from copy import deepcopy
 from random import choice, randint
 from typing import List, Optional, Tuple, Union
-import random
+
 import pandas as pd
 
 
@@ -9,9 +10,7 @@ def create_grid(rows: int = 15, cols: int = 15) -> List[List[Union[str, int]]]:
     return [["■"] * cols for _ in range(rows)]
 
 
-def remove_wall(
-    grid: List[List[Union[str, int]]], coord: Tuple[int, int]
-) -> List[List[Union[str, int]]]:
+def remove_wall(grid: List[List[Union[str, int]]], coord: Tuple[int, int]) -> List[List[Union[str, int]]]:
     """
 
     :param grid:
@@ -35,9 +34,7 @@ def remove_wall(
     return grid
 
 
-def bin_tree_maze(
-    rows: int = 15, cols: int = 15, random_exit: bool = True
-) -> List[List[Union[str, int]]]:
+def bin_tree_maze(rows: int = 15, cols: int = 15, random_exit: bool = True) -> List[List[Union[str, int]]]:
     """
 
     :param rows:
@@ -94,8 +91,6 @@ def get_exits(grid: List[List[Union[str, int]]]) -> List[Tuple[int, int]]:
     return list1
 
 
-
-
 def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str, int]]]:
     """
 
@@ -109,8 +104,8 @@ def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str,
         for j in range(0, len(grid)):
             if grid[i][j] == k:
                 cells.append([i, j])
-    for q in range(len(cells)):
-        x, y = cells[q][0], cells[q][1]
+    for i in range(len(cells)):
+        x, y = cells[i][0], cells[i][1]
         if y != 0 and grid[x][y - 1] == " ":
             grid[x][y - 1] = k + 1
         elif y != 0 and grid[x][y - 1] == 0:
@@ -140,7 +135,7 @@ def shortest_path(
     :return:
     """
     a, b = exit_coord[0], exit_coord[1]
-    theexit = grid[exit_coord[0]][exit_coord[1]]
+    exit = grid[exit_coord[0]][exit_coord[1]]
     k = int(grid[a][b]) - 1
     path = []
     current = a, b
@@ -164,7 +159,7 @@ def shortest_path(
                 b -= 1
         path.append(current)
         k -= 1
-    if len(path) != theexit:
+    if len(path) != exit:
         x = path[-1][0]
         y = path[-1][1]
         grid[x][y] = " "
@@ -252,7 +247,6 @@ def add_path_to_grid(
                 if str(grid[i][j]).isdigit():
                     grid[i][j] = " "
     return grid
-
 
 
 if __name__ == "__main__":
