@@ -142,17 +142,17 @@ def shortest_path(
     path.append(current)
     while k != 0:
         if a + 1 < len(grid) and grid[a + 1][b] == k:
-                current = a + 1, b
-                a += 1
+            current = a + 1, b
+            a += 1
         if a - 1 >= 0 and grid[a - 1][b] == k:
-                current = a - 1, b
-                a -= 1
+            current = a - 1, b
+            a -= 1
         if b + 1 < len(grid) and grid[a][b + 1] == k:
-                current = a, b + 1
-                b += 1
+            current = a, b + 1
+            b += 1
         if b - 1 >= 0 and grid[a][b - 1] == k:
-                current = a, b - 1
-                b -= 1
+            current = a, b - 1
+            b -= 1
         path.append(current)
         k -= 1
     if len(path) != exit:
