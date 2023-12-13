@@ -162,8 +162,8 @@ def check_solution(solution: tp.List[tp.List[str]]) -> bool:
             if len(block_values) != len(solution):
                 return False
 
-    for i, value in enumerate(solution):
-        for j, value in enumerate(solution[i]):
+    for i, row in enumerate(solution):
+        for j, value in enumerate(row):
             try:
                 int(value)
             except ValueError:
