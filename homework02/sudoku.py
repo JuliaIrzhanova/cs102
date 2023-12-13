@@ -79,8 +79,7 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     """
     n = int(math.sqrt(len(grid)))
     start_row, start_col = pos[0] - pos[0] % n, pos[1] - pos[1] % n
-    block_values = [grid[i][j] for i in range(start_row, start_row + n) for j in range(start_col, start_col + n)]
-    return block_values
+    return [grid[i][j] for i in range(start_row, start_row + n) for j in range(start_col, start_col + n)]
 
 
 def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[int, int]]:
@@ -92,9 +91,9 @@ def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[in
     >>> find_empty_positions([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']])
     (2, 0)
     """
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            if grid[i][j] == ".":
+    for i, raw in enumerate(grid):
+        for j, value in enumerate(raw):
+            if value == ".":
                 return i, j
     return None
 
@@ -111,14 +110,9 @@ def find_possible_values(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -
     """
     row, col = pos
     all_values = set(map(str, range(1, 10)))
-    row_values = set(grid[row])
-    col_values = set(grid[i][col] for i in range(len(grid)))
-    block_size = int(math.sqrt(len(grid)))
-    block_row, block_col = row // block_size, col // block_size
-    start_row, start_col = block_row * block_size, block_col * block_size
-    block_values = set(
-        grid[i][j] for i in range(start_row, start_row + block_size) for j in range(start_col, start_col + block_size)
-    )
+    row_values = set(get_row(grid, pos))
+    col_values = set(get_col(grid, pos))
+    block_values = set(get_block(grid, pos))
     return all_values - row_values - col_values - block_values
 
 
