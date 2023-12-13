@@ -150,7 +150,7 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
 def check_solution(solution: tp.List[tp.List[str]]) -> bool:
     """Если решение solution верно, то вернуть True, в противном случае False"""
 
-    for i in range(len(solution)):
+    for i, _ in enumerate(solution):
         row_values = set(get_row(solution, (i, 0)))
         col_values = set(get_col(solution, (0, i)))
         if len(row_values) != len(solution) or len(col_values) != len(solution) or row_values != col_values:
@@ -162,7 +162,7 @@ def check_solution(solution: tp.List[tp.List[str]]) -> bool:
             if len(block_values) != len(solution):
                 return False
 
-    for i in range(len(solution)):
+    for i, _ in enumerate(solution):
         for j in range(len(solution[i])):
             try:
                 int(solution[i][j])
