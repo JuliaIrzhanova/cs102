@@ -19,18 +19,18 @@ def remove_wall(grid: List[List[Union[str, int]]], coord: Tuple[int, int]) -> Li
     """
 
     choice = ["up", "right"]
-    i, j = coord[0], coord[1]
+    x, y = coord[0], coord[1]
     route = random.choice(choice)
     if route == "up":
-        if i != 1:
-            grid[i - 1][j] = " "
-        elif j + 2 != len(grid[0]):
-            grid[i][j + 1] = " "
+        if x != 1:
+            grid[x - 1][y] = " "
+        elif y + 2 != len(grid[0]):
+            grid[x][y + 1] = " "
     else:
-        if j + 2 != len(grid[0]):
-            grid[i][j + 1] = " "
-        elif i != 1:
-            grid[i - 1][j] = " "
+        if y + 2 != len(grid[0]):
+            grid[x][y + 1] = " "
+        elif x != 1:
+            grid[x - 1][y] = " "
     return grid
 
 
@@ -82,13 +82,13 @@ def get_exits(grid: List[List[Union[str, int]]]) -> List[Tuple[int, int]]:
     :return:
     """
 
-    list1 = []
+    exits = []
     for x, row in enumerate(grid):
         if "X" in row:
             for y, _ in enumerate(row):
                 if grid[x][y] == "X":
-                    list1.append((x, y))
-    return list1
+                    exits.append((x, y))
+    return exits
 
 
 def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str, int]]]:
@@ -106,22 +106,26 @@ def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str,
                 cells.append([i, j])
     for i in range(len(cells)):
         x, y = cells[i][0], cells[i][1]
-        if y != 0 and grid[x][y - 1] == " ":
-            grid[x][y - 1] = k + 1
-        elif y != 0 and grid[x][y - 1] == 0:
-            grid[x][y - 1] = k + 1
-        if x != 0 and grid[x - 1][y] == " ":
-            grid[x - 1][y] = k + 1
-        elif x != 0 and grid[x - 1][y] == 0:
-            grid[x - 1][y] = k + 1
-        if y != len(grid) - 1 and grid[x][y + 1] == " ":
-            grid[x][y + 1] = k + 1
-        elif y != len(grid) - 1 and grid[x][y + 1] == 0:
-            grid[x][y + 1] = k + 1
-        if x != len(grid) - 1 and grid[x + 1][y] == " ":
-            grid[x + 1][y] = k + 1
-        elif x != len(grid) - 1 and grid[x + 1][y] == 0:
-            grid[x + 1][y] = k + 1
+        if y != 0:
+            if grid[x][y - 1] == " ":
+                grid[x][y - 1] = k + 1
+            elif grid[x][y - 1] == 0:
+                grid[x][y - 1] = k + 1
+        if x != 0:
+            if grid[x - 1][y] == " ":
+                grid[x - 1][y] = k + 1
+            elif grid[x - 1][y] == 0:
+                grid[x - 1][y] = k + 1
+        if y != len(grid) - 1:
+            if grid[x][y + 1] == " ":
+                grid[x][y + 1] = k + 1
+            elif grid[x][y + 1] == 0:
+                grid[x][y + 1] = k + 1
+        if x != len(grid) - 1:
+            if grid[x + 1][y] == " ":
+                grid[x + 1][y] = k + 1
+            elif  grid[x + 1][y] == 0:
+                grid[x + 1][y] = k + 1
     return grid
 
 
@@ -141,20 +145,16 @@ def shortest_path(
     current = a, b
     path.append(current)
     while k != 0:
-        if a + 1 < len(grid):
-            if grid[a + 1][b] == k:
+        if a + 1 < len(grid) and grid[a + 1][b] == k:
                 current = a + 1, b
                 a += 1
-        if a - 1 >= 0:
-            if grid[a - 1][b] == k:
+        if a - 1 >= 0 and grid[a - 1][b] == k:
                 current = a - 1, b
                 a -= 1
-        if b + 1 < len(grid):
-            if grid[a][b + 1] == k:
+        if b + 1 < len(grid) and grid[a][b + 1] == k:
                 current = a, b + 1
                 b += 1
-        if b - 1 >= 0:
-            if grid[a][b - 1] == k:
+        if b - 1 >= 0 and grid[a][b - 1] == k:
                 current = a, b - 1
                 b -= 1
         path.append(current)
