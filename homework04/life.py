@@ -100,14 +100,9 @@ class GameOfLife:
 
         cell_height, cell_width = len(lines), len(lines[0].strip())
 
-        game = GameOfLife(cell_height, cell_width, cell_size, probability, max_generations)
-
-        game.grid = [[int(char) for char in line.strip()] for line in lines]
-
-        return game
 
     def save(self, filename: pathlib.Path) -> None:
-        """
-        Сохранить текущее состояние клеток в указанный файл.
-        """
-        pass
+        with open(filename, "w") as file:
+            for row in self.grid:
+                line = "".join(map(str, row))
+                file.write(f"{line}\n")

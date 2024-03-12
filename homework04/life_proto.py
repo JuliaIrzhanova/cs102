@@ -75,7 +75,6 @@ class GameOfLife:
         return grid
 
     def draw_grid(self) -> None:
-
         for i in range(self.cell_height):
             for j in range(self.cell_width):
                 color = "green" if self.grid[i][j] == 1 else "white"
