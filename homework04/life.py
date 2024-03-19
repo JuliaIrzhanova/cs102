@@ -2,9 +2,6 @@ import pathlib
 import random
 import typing as tp
 
-import pygame
-from pygame.locals import *
-
 Cell = tp.Tuple[int, int]
 Cells = tp.List[int]
 Grid = tp.List[Cells]
@@ -32,9 +29,9 @@ class GameOfLife:
     def create_grid(self, randomize: bool = False) -> Grid:
         self.grid = []
 
-        for i in range(self.cell_height):
+        for i in range(self.rows):
             row = []
-            for j in range(self.cell_width):
+            for j in range(self.cols):
                 if randomize:
                     cell_value = random.choice([0, 1])
                 else:
@@ -54,15 +51,16 @@ class GameOfLife:
                 # Исключаем текущую клетку из списка соседей
                 if (i, j) != cell:
                     # Проверяем, чтобы сосед не выходил за границы поля
-                    if 0 <= i < self.cell_height and 0 <= j < self.cell_width:
+                    if 0 <= i < self.rows and 0 <= j < self.cols:
                         neighbours.append((i, j))
 
         return neighbours
-    def get_next_generation(self) -> Grid:
-        new_grid = [[0] * self.cell_width for _ in range(self.cell_height)]
 
-        for i in range(self.cell_height):
-            for j in range(self.cell_width):
+    def get_next_generation(self) -> Grid:
+        new_grid = [[0] * self.cols for _ in range(self.rows)]
+
+        for i in range(self.rows):
+            for j in range(self.cols):
                 current_cell = (i, j)
                 current_state = self.grid[i][j]
                 neighbours = self.get_neighbours(current_cell)
@@ -81,25 +79,33 @@ class GameOfLife:
         return self.grid
 
     def step(self) -> None:
-        new_grid = self.get_next_generation()
-        self.grid = new_grid
-
+        self.prev_generation = self.curr_generation
+        self.curr_generation = self.get_next_generation()
+        self.generations += 1
 
     @property
     def is_max_generations_exceeded(self) -> bool:
-        return self.curr_generation >= self.max_generations
+        return self.generations >= self.max_generations
 
     @property
     def is_changing(self) -> bool:
-        return self.previous_generation is not None and self.grid != self.previous_generation
+        return self.prev_generation is not None and self.grid != self.prev_generation
 
     @staticmethod
     def from_file(filename: pathlib.Path) -> "GameOfLife":
         with open(filename, "r") as file:
             lines = file.readlines()
 
-        cell_height, cell_width = len(lines), len(lines[0].strip())
+        # Извлекаем размеры сетки из первой строки файла
+        size = (len(lines), len(lines[0].strip()))
 
+        # Создаем объект GameOfLife с указанными размерами
+        game = GameOfLife(size, randomize=False)
+
+        # Инициализируем сетку значениями из файла
+        game.grid = [[int(char) for char in line.strip()] for line in lines]
+
+        return game
 
     def save(self, filename: pathlib.Path) -> None:
         with open(filename, "w") as file:
