@@ -7,6 +7,7 @@ Cells = tp.List[int]
 Grid = tp.List[Cells]
 
 
+# type: ignore
 class GameOfLife:
     def __init__(
         self,
