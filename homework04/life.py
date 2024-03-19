@@ -1,3 +1,4 @@
+# type: ignore
 import pathlib
 import random
 import typing as tp
@@ -6,8 +7,6 @@ Cell = tp.Tuple[int, int]
 Cells = tp.List[int]
 Grid = tp.List[Cells]
 
-
-# type: ignore
 class GameOfLife:
     def __init__(
         self,
@@ -54,7 +53,7 @@ class GameOfLife:
                     # Проверяем, чтобы сосед не выходил за границы поля
                     if 0 <= i < self.rows and 0 <= j < self.cols:
                         neighbours.append((i, j))
-        # type: ignore
+
         return neighbours
 
     def get_next_generation(self) -> Grid:
@@ -65,7 +64,6 @@ class GameOfLife:
                 current_cell = (i, j)
                 current_state = self.grid[i][j]
                 neighbours = self.get_neighbours(current_cell)
-                # type: ignore
                 live_neighbours = sum(self.grid[x][y] for x, y in neighbours)
 
                 if current_state == 1 and live_neighbours < 2:
@@ -86,7 +84,6 @@ class GameOfLife:
         self.generations += 1
 
     @property
-    # type: ignore
     def is_max_generations_exceeded(self) -> bool:
         return self.generations >= self.max_generations
 

@@ -1,3 +1,4 @@
+# type: ignore
 import random
 import typing as tp
 
@@ -93,7 +94,7 @@ class GameOfLife:
                     # Проверяем, чтобы сосед не выходил за границы поля
                     if 0 <= i < self.cell_height and 0 <= j < self.cell_width:
                         neighbours.append((i, j))
-        # type: ignore
+
         return neighbours
 
     def get_next_generation(self) -> Grid:
@@ -104,7 +105,6 @@ class GameOfLife:
                 current_cell = (i, j)
                 current_state = self.grid[i][j]
                 neighbours = self.get_neighbours(current_cell)
-                # type: ignore
                 live_neighbours = sum(self.grid[x][y] for x, y in neighbours)
 
                 if current_state == 1 and live_neighbours < 2:
