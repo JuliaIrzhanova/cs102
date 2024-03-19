@@ -1,3 +1,4 @@
+# type: ignore
 import curses
 
 from life import GameOfLife

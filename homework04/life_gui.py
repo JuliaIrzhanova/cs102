@@ -1,3 +1,4 @@
+# type: ignore
 import pygame
 from life import GameOfLife
 from pygame.locals import *
