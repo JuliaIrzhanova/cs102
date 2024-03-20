@@ -105,7 +105,7 @@ class GameOfLife:
                 current_cell = (i, j)
                 current_state = self.grid[i][j]
                 neighbours = self.get_neighbours(current_cell)
-                live_neighbours = sum(self.grid[x][y] for x, y in neighbours)
+                live_neighbours = sum(self.get_neighbours(current_cell))
 
                 if current_state == 1 and live_neighbours < 2:
                     new_grid[i][j] = 0  # Мертвая от перенаселения
