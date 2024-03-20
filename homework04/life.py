@@ -26,7 +26,6 @@ class GameOfLife:
         # Текущее число поколений
         self.generations = 1
 
-
     def create_grid(self, randomize: bool = False) -> Grid:
         grid = []
 
@@ -69,7 +68,6 @@ class GameOfLife:
                     next_generation[row][col] = 0
         self.curr_generation = next_generation.copy()
         return next_generation
-
 
     def step(self) -> None:
         self.prev_generation = self.curr_generation
