@@ -44,16 +44,12 @@ class GameOfLife:
 
     def get_neighbours(self, cell: Cell) -> Cells:
         neighbours = []
-        row, col = cell
-
+        row, col = cell[0], cell[1]
         for i in range(row - 1, row + 2):
             for j in range(col - 1, col + 2):
-                # Исключаем текущую клетку из списка соседей
-                if (i, j) != cell:
-                    # Проверяем, чтобы сосед не выходил за границы поля
-                    if 0 <= i < self.rows and 0 <= j < self.cols:
+                if 0 <= i < len(self.curr_generation) and 0 <= j < len(self.curr_generation[0]):
+                    if (i, j) != (row, col):
                         neighbours.append(self.curr_generation[i][j])
-
         return neighbours
 
     def get_next_generation(self) -> Grid:
