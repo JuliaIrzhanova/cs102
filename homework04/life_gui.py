@@ -24,7 +24,7 @@ class GUI(UI):
     def draw_grid(self) -> None:
         for i in range(self.life.rows):
             for j in range(self.life.cols):
-                color = "green" if self.life.grid[i][j] == 1 else "white"
+                color = "green" if self.life.curr_generation[i][j] == 1 else "white"
                 pygame.draw.rect(
                     self.screen, color, (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size)
                 )

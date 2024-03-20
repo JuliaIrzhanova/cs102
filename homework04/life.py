@@ -25,10 +25,10 @@ class GameOfLife:
         self.max_generations = max_generations
         # Текущее число поколений
         self.generations = 1
-        self.grid = self.create_grid(randomize=True)
+
 
     def create_grid(self, randomize: bool = False) -> Grid:
-        self.grid = []
+        grid = []
 
         for i in range(self.rows):
             row = []
@@ -39,9 +39,9 @@ class GameOfLife:
                     cell_value = 0
                 row.append(cell_value)
 
-            self.grid.append(row)
+            grid.append(row)
 
-        return self.grid
+        return grid
 
     def get_neighbours(self, cell: Cell) -> Cells:
         neighbours = []
@@ -53,31 +53,23 @@ class GameOfLife:
                 if (i, j) != cell:
                     # Проверяем, чтобы сосед не выходил за границы поля
                     if 0 <= i < self.rows and 0 <= j < self.cols:
-                        neighbours.append(self.grid[i][j])
+                        neighbours.append(self.curr_generation[i][j])
 
         return neighbours
 
     def get_next_generation(self) -> Grid:
-        new_grid = [[0] * self.cols for _ in range(self.rows)]
-
-        for i in range(self.rows):
-            for j in range(self.cols):
-                current_cell = (i, j)
-                current_state = self.grid[i][j]
-                neighbours = self.get_neighbours(current_cell)
-                live_neighbours = sum(self.grid[x][y] for x, y in neighbours)
-
-                if current_state == 1 and live_neighbours < 2:
-                    new_grid[i][j] = 0  # Мертвая от перенаселения
-                elif current_state == 1 and live_neighbours > 3:
-                    new_grid[i][j] = 0  # Мертвая от одиночества
-                elif current_state == 0 and live_neighbours == 3:
-                    new_grid[i][j] = 1  # Рождение новой клетки
+        next_generation = [[0] * self.cols for _ in range(self.rows)]
+        for row in range(self.rows):
+            for col in range(self.cols):
+                neighbours = sum(self.get_neighbours((row, col)))
+                cell = self.curr_generation[row][col]
+                if (cell == 1 and 2 <= neighbours <= 3) or (cell == 0 and neighbours == 3):
+                    next_generation[row][col] = 1
                 else:
-                    new_grid[i][j] = current_state  # Состояние остается неизменным
+                    next_generation[row][col] = 0
+        self.curr_generation = next_generation.copy()
+        return next_generation
 
-        self.grid = new_grid
-        return self.grid
 
     def step(self) -> None:
         self.prev_generation = self.curr_generation
@@ -90,7 +82,7 @@ class GameOfLife:
 
     @property
     def is_changing(self) -> bool:
-        return self.prev_generation is not None and self.grid != self.prev_generation
+        return self.prev_generation is not None and self.curr_generation != self.prev_generation
 
     @staticmethod
     def from_file(filename: pathlib.Path) -> "GameOfLife":
@@ -110,6 +102,6 @@ class GameOfLife:
 
     def save(self, filename: pathlib.Path) -> None:
         with open(filename, "w") as file:
-            for row in self.grid:
+            for row in self.curr_generation:
                 line = "".join(map(str, row))
                 file.write(f"{line}\n")
