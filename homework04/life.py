@@ -53,7 +53,7 @@ class GameOfLife:
                 if (i, j) != cell:
                     # Проверяем, чтобы сосед не выходил за границы поля
                     if 0 <= i < self.rows and 0 <= j < self.cols:
-                        neighbours.append((i, j))
+                        neighbours.append(self.grid[i][j])
 
         return neighbours
 
