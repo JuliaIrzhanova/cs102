@@ -1,3 +1,4 @@
+# type: ignore
 import abc
 
 from life import GameOfLife
