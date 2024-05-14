@@ -1,7 +1,7 @@
 from copy import deepcopy
 from random import choice, randint
 from typing import List, Optional, Tuple, Union
-
+import random
 import pandas as pd
 
 
@@ -19,7 +19,20 @@ def remove_wall(
     :return:
     """
 
-    pass
+    choice = ["up", "right"]
+    i, j = coord[0], coord[1]
+    route = random.choice(choice)
+    if route == "up":
+        if i != 1:
+            grid[i - 1][j] = " "
+        elif j + 2 != len(grid[0]):
+            grid[i][j + 1] = " "
+    else:
+        if j + 2 != len(grid[0]):
+            grid[i][j + 1] = " "
+        elif i != 1:
+            grid[i - 1][j] = " "
+    return grid
 
 
 def bin_tree_maze(
@@ -37,7 +50,7 @@ def bin_tree_maze(
     empty_cells = []
     for x, row in enumerate(grid):
         for y, _ in enumerate(row):
-            if x % 2 == 1 and y % 2 == 1:
+            if x % 2 != 0 and y % 2 != 0:
                 grid[x][y] = " "
                 empty_cells.append((x, y))
 
@@ -47,6 +60,9 @@ def bin_tree_maze(
     # выбрать второе возможное направление
     # 3. перейти в следующую клетку, сносим между клетками стену
     # 4. повторять 2-3 до тех пор, пока не будут пройдены все клетки
+
+    for i in empty_cells:
+        grid = remove_wall(grid, i)
 
     # генерация входа и выхода
     if random_exit:
@@ -62,6 +78,7 @@ def bin_tree_maze(
     return grid
 
 
+
 def get_exits(grid: List[List[Union[str, int]]]) -> List[Tuple[int, int]]:
     """
 
@@ -69,7 +86,13 @@ def get_exits(grid: List[List[Union[str, int]]]) -> List[Tuple[int, int]]:
     :return:
     """
 
-    pass
+    list1 = []
+    for x, row in enumerate(grid):
+        if "X" in row:
+            for y, _ in enumerate(row):
+                if grid[x][y] == "X":
+                    list1.append((x, y))
+    return list1
 
 
 def make_step(grid: List[List[Union[str, int]]], k: int) -> List[List[Union[str, int]]]:
