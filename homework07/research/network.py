@@ -18,8 +18,29 @@ def ego_network(
     :param user_id: Идентификатор пользователя, для которого строится граф друзей.
     :param friends: Идентификаторы друзей, между которыми устанавливаются связи.
     """
-    pass
+    if user_id is None:
+        raise ValueError("user_id must be provided")
 
+    if friends is None:
+        friends_response = get_friends(user_id)
+        friends = [friend['id'] for friend in friends_response.items]
+
+    ego_net = []
+
+    # Создаем ребра между указанным пользователем и его друзьями
+    for friend_id in friends:
+        ego_net.append((user_id, friend_id))
+
+    # Используем get_mutual для создания ребер между друзьями
+    mutual_friends = get_mutual(source_uid=user_id, target_uids=friends, progress=tqdm)
+
+    for mutual in mutual_friends:
+        target_id = mutual["id"]
+        for common_friend_id in mutual["common_friends"]:
+            if target_id < common_friend_id:  # Чтобы избежать дублирования ребер
+                ego_net.append((target_id, common_friend_id))
+
+    return ego_net
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
     graph = nx.Graph()
