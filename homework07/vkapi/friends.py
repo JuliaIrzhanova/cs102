@@ -1,11 +1,12 @@
 import dataclasses
 import math
-import time
+from time import sleep
 import typing as tp
+from vkapi.config import VK_CONFIG
 
 import requests
 
-from vkapi import config, session
+from vkapi import session
 
 # from vkapi.exceptions import APIError
 

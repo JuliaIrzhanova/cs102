@@ -5,7 +5,6 @@ import community as community_louvain
 import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
-
 from vkapi.friends import get_friends, get_mutual
 
 
@@ -23,15 +22,15 @@ def ego_network(
 
     if friends is None:
         friends_response = get_friends(user_id)
-        friends = [friend['id'] for friend in friends_response.items]
+        friends = [friend["id"] for friend in friends_response.items]
 
     ego_net = []
 
-    # Создаем ребра между указанным пользователем и его друзьями
+    # создание ребер между указанным пользователем и его друзьями
     for friend_id in friends:
         ego_net.append((user_id, friend_id))
 
-    # Используем get_mutual для создания ребер между друзьями
+    # создание ребер между друзьями
     mutual_friends = get_mutual(source_uid=user_id, target_uids=friends, progress=tqdm)
 
     for mutual in mutual_friends:
@@ -41,6 +40,7 @@ def ego_network(
                 ego_net.append((target_id, common_friend_id))
 
     return ego_net
+
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
     graph = nx.Graph()
