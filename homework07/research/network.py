@@ -1,5 +1,7 @@
+# type: ignore
 import typing as tp
 from collections import defaultdict
+
 import community as community_louvain
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -14,7 +16,7 @@ class MutualFriends(tp.TypedDict):
 
 
 def ego_network(
-        user_id: tp.Optional[int] = None, friends: tp.Optional[tp.List[int]] = None
+    user_id: tp.Optional[int] = None, friends: tp.Optional[tp.List[int]] = None
 ) -> tp.List[tp.Tuple[int, int]]:
     """
     Построить эгоцентричный граф друзей.
@@ -25,8 +27,12 @@ def ego_network(
 
     if friends is None:
         friends_response = get_friends(user_id, fields=["nickname"])
-        friends = [friend["id"] for friend in friends_response.items if not isinstance(friend, int) and not friend.get("deactivated")
-]
+        print(friends_response)
+        friends = [
+            friend["id"]
+            for friend in friends_response.items
+            if not isinstance(friend, int) and not friend.get("deactivated")
+        ]
 
     net = []
 
@@ -41,7 +47,6 @@ def ego_network(
         net.extend((target_id, right_id) for right_id in friends)
 
     return net
-
 
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
@@ -74,9 +79,9 @@ def get_communities(net: tp.List[tp.Tuple[int, int]]) -> tp.Dict[int, tp.List[in
 
 
 def describe_communities(
-        clusters: tp.Dict[int, tp.List[int]],
-        friends: tp.List[tp.Dict[str, tp.Any]],
-        fields: tp.Optional[tp.List[str]] = None,
+    clusters: tp.Dict[int, tp.List[int]],
+    friends: tp.List[tp.Dict[str, tp.Any]],
+    fields: tp.Optional[tp.List[str]] = None,
 ) -> pd.DataFrame:
     if fields is None:
         fields = ["first_name", "last_name"]
@@ -90,6 +95,7 @@ def describe_communities(
                     break
     return pd.DataFrame(data=data, columns=["cluster"] + fields)
 
+
 net = ego_network(user_id=71313378)
 plot_ego_network(net)
 plot_communities(net)
@@ -97,4 +103,3 @@ communities = get_communities(net)
 friends = get_friends(443814824).items
 df = describe_communities(communities, friends)
 print(df)
-

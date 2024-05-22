@@ -1,4 +1,4 @@
-#type: ignore
+# type: ignore
 import dataclasses
 import math
 import typing as tp
@@ -43,8 +43,31 @@ def get_friends(
 
     if fields:
         params["fields"] = ",".join(fields)
-    response = requests.get(f"{domain}/friends.get", params=params)
-    data = response.json()
+
+    max_retries = 5
+    retry_delay = 1
+
+    for attempt in range(max_retries):
+        response = requests.get(f"{domain}/friends.get", params=params)
+        data = response.json()
+
+        if "error" in data:
+            error_code = data["error"]["error_code"]
+            error_msg = data["error"]["error_msg"]
+            if error_code == 30:
+                raise Exception(f"Аккаунт пользователя {user_id} является закрытым.")
+            elif error_code == 6:
+                if attempt < max_retries - 1:
+                    sleep(retry_delay)
+                else:
+                    raise Exception(f"Ошибка VK API: Превышен лимит запросов ({error_msg})")
+            else:
+                raise Exception(f"Ошибка VK API: {error_msg}")
+        else:
+            friends_data = data["response"]
+            return FriendsResponse(count=friends_data["count"], items=friends_data["items"])
+
+    raise Exception("Не удалось выполнить запрос к VK API после нескольких попыток.")
 
     friends_data = data["response"]
     return FriendsResponse(count=friends_data["count"], items=friends_data["items"])
@@ -94,7 +117,7 @@ def get_mutual(
         target_uids = [target_uid]
 
     source_friends_response = get_friends(source_uid)
-    source_friends_set = set([friend["id"] for friend in source_friends_response.items if "id" in friend])
+    source_friends_set = set(source_friends_response.items)
     if not isinstance(source_friends_response.items, list):
         raise ValueError("Expected source_friends_response.items to be a list")
 
@@ -104,7 +127,7 @@ def get_mutual(
 
         for target in chunk:
             target_friends = get_friends(target)
-            target_friends_set = set([friend["id"] for friend in target_friends.items if "id" in friend])
+            target_friends_set = set(target_friends.items)
 
             common_friends = list(source_friends_set.intersection(target_friends_set))
 
@@ -114,4 +137,8 @@ def get_mutual(
 
         sleep(1 / 3)
 
+    print(source_friends_response)
     return mutual_friends
+
+
+print(get_mutual(71313378, 443814824))

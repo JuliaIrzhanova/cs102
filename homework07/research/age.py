@@ -16,7 +16,7 @@ def age_predict(user_id: int) -> tp.Optional[float]:
     """
     data = get_friends(user_id, fields=["bdate"])
     current_date = dt.datetime.now()
-    ages: tp.List[float] = []
+    ages = []
     for friend in data.items:
         try:
             if not isinstance(friend, dict):
@@ -26,3 +26,5 @@ def age_predict(user_id: int) -> tp.Optional[float]:
         except:
             pass
     return statistics.median(ages) if ages else None
+
+print(age_predict(71313378))
