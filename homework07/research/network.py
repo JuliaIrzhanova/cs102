@@ -1,6 +1,5 @@
 import typing as tp
 from collections import defaultdict
-
 import community as community_louvain
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -8,8 +7,14 @@ import pandas as pd
 from vkapi.friends import get_friends, get_mutual
 
 
+class MutualFriends(tp.TypedDict):
+    id: int
+    common_friends: tp.List[int]
+    common_count: int
+
+
 def ego_network(
-    user_id: tp.Optional[int] = None, friends: tp.Optional[tp.List[int]] = None
+        user_id: tp.Optional[int] = None, friends: tp.Optional[tp.List[int]] = None
 ) -> tp.List[tp.Tuple[int, int]]:
     """
     Построить эгоцентричный граф друзей.
@@ -17,29 +22,26 @@ def ego_network(
     :param user_id: Идентификатор пользователя, для которого строится граф друзей.
     :param friends: Идентификаторы друзей, между которыми устанавливаются связи.
     """
-    if user_id is None:
-        raise ValueError("user_id must be provided")
 
     if friends is None:
-        friends_response = get_friends(user_id)
-        friends = [friend["id"] for friend in friends_response.items]
+        friends_response = get_friends(user_id, fields=["nickname"])
+        friends = [friend["id"] for friend in friends_response.items if not isinstance(friend, int) and not friend.get("deactivated")
+]
 
-    ego_net = []
+    net = []
 
-    # создание ребер между указанным пользователем и его друзьями
     for friend_id in friends:
-        ego_net.append((user_id, friend_id))
+        net.append((user_id, friend_id))
 
+    mutual_friends = get_mutual(source_uid=user_id, target_uids=friends)
     # создание ребер между друзьями
-    mutual_friends = get_mutual(source_uid=user_id, target_uids=friends, progress=tqdm)
-
     for mutual in mutual_friends:
         target_id = mutual["id"]
-        for common_friend_id in mutual["common_friends"]:
-            if target_id < common_friend_id:  # Чтобы избежать дублирования ребер
-                ego_net.append((target_id, common_friend_id))
+        friends = mutual["common_friends"]
+        net.extend((target_id, right_id) for right_id in friends)
 
-    return ego_net
+    return net
+
 
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
@@ -72,9 +74,9 @@ def get_communities(net: tp.List[tp.Tuple[int, int]]) -> tp.Dict[int, tp.List[in
 
 
 def describe_communities(
-    clusters: tp.Dict[int, tp.List[int]],
-    friends: tp.List[tp.Dict[str, tp.Any]],
-    fields: tp.Optional[tp.List[str]] = None,
+        clusters: tp.Dict[int, tp.List[int]],
+        friends: tp.List[tp.Dict[str, tp.Any]],
+        fields: tp.Optional[tp.List[str]] = None,
 ) -> pd.DataFrame:
     if fields is None:
         fields = ["first_name", "last_name"]
@@ -87,3 +89,12 @@ def describe_communities(
                     data.append([cluster_n] + [friend.get(field) for field in fields])  # type: ignore
                     break
     return pd.DataFrame(data=data, columns=["cluster"] + fields)
+
+net = ego_network(user_id=71313378)
+plot_ego_network(net)
+plot_communities(net)
+communities = get_communities(net)
+friends = get_friends(443814824).items
+df = describe_communities(communities, friends)
+print(df)
+

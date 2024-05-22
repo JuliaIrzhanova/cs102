@@ -15,8 +15,6 @@ def age_predict(user_id: int) -> tp.Optional[float]:
     :return: Медианный возраст пользователя.
     """
     data = get_friends(user_id, fields=["bdate"])
-    # if not isinstance(data, dict) and not isinstance(data, FriendsResponse):
-    #     raise ValueError()
     current_date = dt.datetime.now()
     ages: tp.List[float] = []
     for friend in data.items:

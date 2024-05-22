@@ -1,12 +1,13 @@
+#type: ignore
 import dataclasses
 import math
-from time import sleep
 import typing as tp
-from vkapi.config import VK_CONFIG
+from time import sleep
 
 import requests
 
 from vkapi import session
+from vkapi.config import VK_CONFIG
 
 # from vkapi.exceptions import APIError
 
@@ -49,6 +50,9 @@ def get_friends(
     return FriendsResponse(count=friends_data["count"], items=friends_data["items"])
 
 
+print(get_friends(71313378))
+
+
 class MutualFriends(tp.TypedDict):
     id: int
     common_friends: tp.List[int]
@@ -89,11 +93,10 @@ def get_mutual(
     else:
         target_uids = [target_uid]
 
-    if source_uid is None:
-        raise ValueError("source_uid must be provided")
-
     source_friends_response = get_friends(source_uid)
     source_friends_set = set([friend["id"] for friend in source_friends_response.items if "id" in friend])
+    if not isinstance(source_friends_response.items, list):
+        raise ValueError("Expected source_friends_response.items to be a list")
 
     chunk_size = 100
     for i in progress(range(0, len(target_uids), chunk_size)):
@@ -103,13 +106,12 @@ def get_mutual(
             target_friends = get_friends(target)
             target_friends_set = set([friend["id"] for friend in target_friends.items if "id" in friend])
 
-            common_friends = source_friends_set.intersection(target_friends_set)
+            common_friends = list(source_friends_set.intersection(target_friends_set))
 
             mutual_friends.append(
                 {"id": target, "common_friends": list(common_friends), "common_count": len(common_friends)}
             )
 
-        # учитываем ограничение на частоту запросов
         sleep(1 / 3)
 
     return mutual_friends
