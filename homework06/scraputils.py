@@ -5,8 +5,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-from db import News
-
 
 def extract_news(parser):
     """
