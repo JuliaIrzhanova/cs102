@@ -27,4 +27,4 @@ def age_predict(user_id: int) -> tp.Optional[float]:
             pass
     return statistics.median(ages) if ages else None
 
-print(age_predict(71313378))
+print(age_predict(189183825))

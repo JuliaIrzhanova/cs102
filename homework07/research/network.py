@@ -103,3 +103,4 @@ communities = get_communities(net)
 friends = get_friends(443814824).items
 df = describe_communities(communities, friends)
 print(df)
+
