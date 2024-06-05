@@ -3,9 +3,8 @@
 Этот модуль реализует веб-приложение для работы с новостями,
 включая обновление, классификацию и вывод новостей.
 """
-from bottle import redirect, request, route, run, template
-
 from bayes import NaiveBayesClassifier
+from bottle import redirect, request, route, run, template
 from db import News, session
 from scraputils import get_news
 
