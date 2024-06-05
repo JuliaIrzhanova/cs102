@@ -3,15 +3,17 @@
 Этот модуль реализует веб-приложение для работы с новостями,
 включая обновление, классификацию и вывод новостей.
 """
-from bayes import NaiveBayesClassifier
 from bottle import redirect, request, route, run, template
+
+from bayes import NaiveBayesClassifier
 from db import News, session
 from scraputils import get_news
 
 
 @route("/")
 def index():
-    redirect("/news")
+    if __name__ == "__main__":
+        redirect("/news")
 
 
 @route("/news")
@@ -33,11 +35,12 @@ def add_label():
     news_id = request.query.id
 
     db_session = session()
-    news_item = db_session.query(News).filter_by(id=news_id).first()
+    news_item = db_session.query(News).get({"id": news_id})
     news_item.label = label
     db_session.commit()
 
-    redirect("/news")
+    if __name__ == "__main__":
+        redirect("/news")
 
 
 @route("/update")
@@ -58,8 +61,9 @@ def update_news():
                 points=news_item["points"],
             )
             db_session.add(new_news)
-    db_session.commit()
-    redirect("/news")
+            db_session.commit()
+    if __name__ == "__main__":
+        redirect("/news")
 
 
 @route("/classify")
@@ -82,18 +86,17 @@ def classify_news():
             news.label = model.predict([news.title])[0]
 
         db_session.commit()
-    redirect("/news")
+
+    if __name__ == "__main__":
+        redirect("/news")
 
 
 @route("/recommendations")
 def recommendations():
-    """
-    Отображает ранжированный список новостей.
-    """
     db_session = session()
-    unlabelled_news = db_session.query(News).filter(News.label.is_(None)).all()
+    unlabelled_news = db_session.query(News).filter(News.label is None).all()
 
-    labelled_news = db_session.query(News).filter(News.label.isnot(None)).all()
+    labelled_news = db_session.query(News).filter(News.label is not None).all()
     y_labelled = [news.label for news in labelled_news]
     x_labelled = [news.title for news in labelled_news]
 

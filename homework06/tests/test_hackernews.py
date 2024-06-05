@@ -25,6 +25,7 @@ class TestHackernews(unittest.TestCase):
             self.assertTrue(news.label == "never")
             self.assertTrue(session.mock_calls[-1] == call().commit())
 
+
     @mock.patch("hackernews.get_news")
     @mock.patch("hackernews.session")
     def test_update_news(self, session, get_news):
