@@ -1,16 +1,21 @@
 import csv
 import string
+
 from bayes import NaiveBayesClassifier
 
 with open("SMSSpamCollection") as f:
     data = list(csv.reader(f, delimiter="\t"))
+
+
 def clean(s):
-        translator = str.maketrans("", "", string.punctuation)
-        return s.translate(translator)
+    translator = str.maketrans("", "", string.punctuation)
+    return s.translate(translator)
+
+
 X, y = [], []
 for target, msg in data:
-        X.append(msg)
-        y.append(target)
+    X.append(msg)
+    y.append(target)
 X = [clean(x).lower() for x in X]
 
 
