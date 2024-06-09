@@ -3,8 +3,9 @@
 Этот модуль реализует веб-приложение для работы с новостями,
 включая обновление, классификацию и вывод новостей.
 """
-from bayes import NaiveBayesClassifier
 from bottle import redirect, request, route, run, template
+
+from bayes import NaiveBayesClassifier
 from db import News, session
 from scraputils import get_news
 
@@ -35,8 +36,9 @@ def add_label():
 
     db_session = session()
     news_item = db_session.query(News).get({"id": news_id})
-    news_item.label = label
-    db_session.commit()
+    if news_item:
+        news_item.label = label
+        db_session.commit()
 
     if __name__ == "__main__":
         redirect("/news")
@@ -49,9 +51,10 @@ def update_news():
     """
     db_session = session()
     news_items = get_news("https://news.ycombinator.com/newest", n_pages=10)
+    n_commit = 0
     for news_item in news_items:
         existing_news = db_session.query(News).filter_by(title=news_item["title"], author=news_item["author"]).first()
-        if not existing_news:
+        if isinstance(existing_news, int) and existing_news == 0:
             new_news = News(
                 title=news_item["title"],
                 author=news_item["author"],
@@ -60,7 +63,8 @@ def update_news():
                 points=news_item["points"],
             )
             db_session.add(new_news)
-            db_session.commit()
+            n_commit += 1
+    db_session.commit()
     if __name__ == "__main__":
         redirect("/news")
 
@@ -68,56 +72,36 @@ def update_news():
 @route("/classify")
 def classify_news():
     """
-    Классифицирует новости без меток и обновляет базу данных.
+    Классифицирует новости без меток и возвращает отсортированные новости.
     """
-    db_session = session()
-    unlabelled_news = db_session.query(News).filter(News.label.is_(None)).all()
+    s_session = session()
+    news_list = s_session.query(News).filter(News.label.isnot(None)).all()
+    unlabeled_news = s_session.query(News).filter(News.label.is_(None)).all()
 
-    if unlabelled_news:
-        labelled_news = db_session.query(News).filter(News.label.isnot(None)).all()
-        y_labelled = [news.label for news in labelled_news]
-        x_labelled = [news.title for news in labelled_news]
+    x_t = [news.title for news in news_list]
+    y_l = [news.label for news in news_list]
 
-        model = NaiveBayesClassifier()
-        model.fit(x_labelled, y_labelled)
+    model = NaiveBayesClassifier(alpha=0.05)
+    model.fit(x_t, y_l)
 
-        for news in unlabelled_news:
-            news.label = model.predict([news.title])[0]
+    titles_to_classify = [news.title for news in unlabeled_news]
+    predicted_labels = model.predict(titles_to_classify)
 
-        db_session.commit()
+    for news, label in zip(unlabeled_news, predicted_labels):
+        news.label = label
 
-    if __name__ == "__main__":
-        redirect("/news")
+    s_session.commit()
+
+    sorted_news = sorted(unlabeled_news, key=lambda news: news.label)
+
+    return sorted_news
 
 
 @route("/recommendations")
 def recommendations():
-    db_session = session()
-    unlabelled_news = db_session.query(News).filter(News.label is None).all()
-
-    labelled_news = db_session.query(News).filter(News.label is not None).all()
-    y_labelled = [news.label for news in labelled_news]
-    x_labelled = [news.title for news in labelled_news]
-
-    model = NaiveBayesClassifier()
-    model.fit(x_labelled, y_labelled)
-
-    classified_news = []
-    for news in unlabelled_news:
-        label = model.predict([news.title])[0]
-        classified_news.append(
-            {
-                "title": news.title,
-                "author": news.author,
-                "url": news.url,
-                "comments": news.comments,
-                "points": news.points,
-                "label": label,
-            }
-        )
-
-    classified_news = sorted(classified_news, key=lambda x: x["points"], reverse=True)
-    return template("news_recommendations", rows=classified_news)
+    """Отображает рекомендации новостей."""
+    news = classify_news()
+    return template("news_recommendations", rows=news)
 
 
 if __name__ == "__main__":

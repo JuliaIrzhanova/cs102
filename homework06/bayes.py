@@ -11,7 +11,7 @@ class NaiveBayesClassifier:
         self.word_counts_class = {}  # словарь для хранения общего количества слов для каждого класса
 
     def fit(self, X, y):
-        """Fit Naive Bayes classifier according to X, y."""
+        """Обучает классифкатор основываясь на X, y."""
         for text, label in zip(X, y):
             self.classes.add(label)
             if label not in self.counts:
@@ -28,7 +28,7 @@ class NaiveBayesClassifier:
                 self.word_counts_class[label] += 1
 
     def predict(self, X):
-        """Perform classification on an array of test vectors X."""
+        """Представляет классификацию как массив из тестовых векторов Х."""
         predictions = []
         for text in X:
             words = text.split()
