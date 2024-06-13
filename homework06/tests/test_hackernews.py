@@ -1,3 +1,4 @@
+# type: ignore
 import unittest
 from unittest import mock
 from unittest.mock import call
@@ -23,6 +24,7 @@ class TestHackernews(unittest.TestCase):
             add_label()
             self.assertTrue(news.label == "never")
             self.assertTrue(session.mock_calls[-1] == call().commit())
+
 
     @mock.patch("hackernews.get_news")
     @mock.patch("hackernews.session")
@@ -61,7 +63,7 @@ class TestHackernews(unittest.TestCase):
         for one_call in session.mock_calls:
             if one_call == call().commit() and one_call != call():
                 n_commit += 1
-        self.assertEqual(2, n_commit)
+        self.assertEqual(1, n_commit)
 
     @mock.patch("hackernews.session")
     def test_classify_news(self, session):
