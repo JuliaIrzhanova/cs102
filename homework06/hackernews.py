@@ -48,22 +48,17 @@ def update_news():
     """
     Обновляет новости с сайта Hacker News и сохраняет их в базе данных.
     """
-    db_session = session()
-    news_items = get_news("https://news.ycombinator.com/newest", n_pages=10)
-    n_commit = 0
-    for news_item in news_items:
-        existing_news = db_session.query(News).filter_by(title=news_item["title"], author=news_item["author"]).first()
-        if isinstance(existing_news, int) and existing_news == 0:
-            new_news = News(
-                title=news_item["title"],
-                author=news_item["author"],
-                url=news_item["url"],
-                comments=news_item["comments"],
-                points=news_item["points"],
+    s_session = session()
+    url = "https://news.ycombinator.com/newest"
+    nnews_list = get_news(url)
+    for new in nnews_list:
+        exists = s_session.query(News).filter_by(title=new["title"], author=new["author"]).first()
+        if not exists:
+            news_item = News(
+                title=new["title"], author=new["author"], url=new["url"], comments=new["comments"], points=new["points"]
             )
-            db_session.add(new_news)
-            n_commit += 1
-    db_session.commit()
+            s_session.add(news_item)
+    s_session.commit()
     if __name__ == "__main__":
         redirect("/news")
 
